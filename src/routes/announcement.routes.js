@@ -1,0 +1,14 @@
+import { Router } from "express";
+import { createAnnouncement,getAnnouncements,getAnnouncementById,updateAnnouncement,deleteAnnouncement,togglePinAnnouncement,publishAnnouncement,archiveAnnouncement } from "../controllers/announcement.controller.js";
+import { authUser,authorizePermission } from "../middlewares/auth.middleware.js";
+import { PERMISSIONS } from "../constants/permissions.js";
+const router=Router();
+router.post("/",authUser,authorizePermission(PERMISSIONS.MANAGE_ANNOUNCEMENTS),createAnnouncement);
+router.get("/",authUser,getAnnouncements);
+router.get("/:id",authUser,getAnnouncementById);
+router.put("/:id",authUser,authorizePermission(PERMISSIONS.MANAGE_ANNOUNCEMENTS),updateAnnouncement);
+router.delete("/:id",authUser,authorizePermission(PERMISSIONS.MANAGE_ANNOUNCEMENTS),deleteAnnouncement);
+router.patch("/:id/pin",authUser,authorizePermission(PERMISSIONS.MANAGE_ANNOUNCEMENTS),togglePinAnnouncement);
+router.patch("/:id/publish",authUser,authorizePermission(PERMISSIONS.MANAGE_ANNOUNCEMENTS),publishAnnouncement);
+router.patch("/:id/archive",authUser,authorizePermission(PERMISSIONS.MANAGE_ANNOUNCEMENTS),archiveAnnouncement);
+export default router;

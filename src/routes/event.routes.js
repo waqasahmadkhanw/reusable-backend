@@ -1,0 +1,12 @@
+import { Router } from "express";
+import { createEvent,getMyEvents,getEventById,updateEvent,deleteEvent,updateEventStatus } from "../controllers/event.controller.js";
+import { authUser,authorizePermission } from "../middlewares/auth.middleware.js";
+import { PERMISSIONS } from "../constants/permissions.js";
+const router=Router();
+router.post("/",authUser,authorizePermission(PERMISSIONS.MANAGE_EVENTS),createEvent);
+router.get("/",authUser,getMyEvents);
+router.get("/:id",authUser,getEventById);
+router.put("/:id",authUser,updateEvent);
+router.patch("/:id/status",authUser,updateEventStatus);
+router.delete("/:id",authUser,deleteEvent);
+export default router;

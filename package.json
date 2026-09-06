@@ -1,0 +1,46 @@
+{
+  "name": "mern-reusable-backend-template",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "main": "src/index.js",
+  "scripts": {
+    "dev": "nodemon src/index.js",
+    "start": "node src/index.js",
+    "seed:admin": "node seed/createAdmin.js",
+    "test": "node --test",
+    "db:sync-indexes": "node scripts/sync-indexes.mjs",
+    "lint": "eslint . --max-warnings=0",
+    "lint:fix": "eslint . --fix",
+    "format": "prettier --write \"**/*.{js,json,mjs,md,yml,yaml}\"",
+    "format:check": "prettier --check \"**/*.{js,json,mjs,md,yml,yaml}\"",
+    "docs:check": "node --check src/docs/openapi.js && node --check src/routes/docs.routes.js",
+    "api:contract:check": "node scripts/check-api-contract.mjs",
+    "quality": "npm run lint && npm run format:check && npm run docs:check && npm run api:contract:check && npm test"
+  },
+  "dependencies": {
+    "bcrypt": "^6.0.0",
+    "cloudinary": "^2.9.0",
+    "cookie-parser": "^1.4.7",
+    "cors": "^2.8.6",
+    "dotenv": "^17.4.2",
+    "express": "^5.2.1",
+    "express-rate-limit": "^8.3.1",
+    "helmet": "^8.1.0",
+    "hpp": "^0.2.3",
+    "jsonwebtoken": "^9.0.3",
+    "mongoose": "^9.2.2",
+    "multer": "^2.0.2",
+    "nodemailer": "^9.0.3",
+    "nodemon": "^3.1.14",
+    "stripe": "^22.2.2",
+    "uuid": "^14.0.0",
+    "google-auth-library": "^10.2.1"
+  },
+  "devDependencies": {
+    "eslint": "^9.39.1",
+    "@eslint/js": "^9.39.1",
+    "globals": "^16.0.0",
+    "prettier": "^3.6.2"
+  }
+}

@@ -1,0 +1,16 @@
+import { Router } from "express";
+import { getAllUsers,getUserById,createUser,updateUser,deleteUser,changeUserRole,toggleUserActivation } from "../controllers/userManagement.controller.js";
+import { authUser,authorizePermission } from "../middlewares/auth.middleware.js";
+import { PERMISSIONS } from "../constants/permissions.js";
+import { validate } from "../middlewares/validate.middleware.js";
+import { createUserRules, updateUserRules, changeUserRoleRules } from "../validators/user.validator.js";
+const router=Router();
+router.use(authUser);
+router.get("/",authorizePermission(PERMISSIONS.READ_USERS),getAllUsers);
+router.post("/",authorizePermission(PERMISSIONS.CREATE_USERS),validate(createUserRules),createUser);
+router.get("/:id",authorizePermission(PERMISSIONS.READ_USERS),getUserById);
+router.patch("/:id",authorizePermission(PERMISSIONS.UPDATE_USERS),validate(updateUserRules),updateUser);
+router.patch("/:id/role",authorizePermission(PERMISSIONS.UPDATE_USERS),validate(changeUserRoleRules),changeUserRole);
+router.patch("/:id/activation",authorizePermission(PERMISSIONS.UPDATE_USERS),toggleUserActivation);
+router.delete("/:id",authorizePermission(PERMISSIONS.DELETE_USERS),deleteUser);
+export default router;

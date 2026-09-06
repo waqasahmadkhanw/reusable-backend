@@ -1,0 +1,18 @@
+import { Router } from "express";
+import { assignUserPermissions,createRole,deleteRole,getAllPermissions,getAllRoles,getRoleById,getUserPermissions,toggleRoleStatus,updateRole } from "../controllers/role.controller.js";
+import { authUser,authorizePermission } from "../middlewares/auth.middleware.js";
+import { PERMISSIONS } from "../constants/permissions.js";
+import { validate } from "../middlewares/validate.middleware.js";
+import { assignUserPermissionsRules, createRoleRules, roleIdRules, updateRoleRules, userIdRules } from "../validators/role.validator.js";
+const router=Router();
+router.use(authUser,authorizePermission(PERMISSIONS.MANAGE_ROLES));
+router.get("/permissions",getAllPermissions);
+router.get("/",getAllRoles);
+router.post("/",validate(createRoleRules),createRole);
+router.get("/:id",validate(roleIdRules,{source:"params"}),getRoleById);
+router.put("/:id",validate(roleIdRules,{source:"params"}),validate(updateRoleRules),updateRole);
+router.delete("/:id",validate(roleIdRules,{source:"params"}),deleteRole);
+router.patch("/:id/toggle-status",validate(roleIdRules,{source:"params"}),toggleRoleStatus);
+router.patch("/users/:userId/permissions",validate(userIdRules,{source:"params"}),validate(assignUserPermissionsRules),assignUserPermissions);
+router.get("/users/:userId/permissions",validate(userIdRules,{source:"params"}),getUserPermissions);
+export default router;

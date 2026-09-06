@@ -1,0 +1,16 @@
+import { Router } from "express";
+import { getMyProfile, updateProfile, updateAvatar, removeAvatar, updateSocialLinks, deleteAccount } from "../controllers/profile.controller.js";
+import { authUser } from "../middlewares/auth.middleware.js";
+import { upload } from "../middlewares/multer.middleware.js";
+import { validateUploadedFileMiddleware } from "../middlewares/fileValidation.middleware.js";
+import { validate } from "../middlewares/validate.middleware.js";
+import { updateProfileRules, updateSocialLinksRules } from "../validators/profile.validator.js";
+const router=Router();
+router.use(authUser);
+router.get("/",getMyProfile);
+router.patch("/",validate(updateProfileRules),updateProfile);
+router.post("/avatar",upload.single("avatar"),validateUploadedFileMiddleware({ allowedTypes: "image" }),updateAvatar);
+router.delete("/avatar",removeAvatar);
+router.patch("/socials",validate(updateSocialLinksRules),updateSocialLinks);
+router.delete("/account",deleteAccount);
+export default router;

@@ -1,0 +1,10 @@
+import { Router } from "express";
+import { getMyOrders,getAllOrders,getOrderById,cancelOrder } from "../controllers/order.controller.js";
+import { authUser,authorizePermission } from "../middlewares/auth.middleware.js";
+import { PERMISSIONS } from "../constants/permissions.js";
+const router=Router();
+router.get("/me",authUser,getMyOrders);
+router.get("/",authUser,authorizePermission(PERMISSIONS.MANAGE_PAYMENTS),getAllOrders);
+router.get("/:id",authUser,getOrderById);
+router.patch("/:id/cancel",authUser,cancelOrder);
+export default router;

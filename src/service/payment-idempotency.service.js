@@ -1,0 +1,9 @@
+import crypto from "crypto";
+import {PaymentIdempotency} from "../models/paymentIdempotency.model.js";
+import {ApiError} from "../utils/ApiError.js";
+const KEY_RE=/^[A-Za-z0-9._:-]{8,128}$/; const TTL_MS=24*60*60*1000;
+export const normalizeIdempotencyKey=value=>{const key=String(value||"").trim();if(!KEY_RE.test(key))throw new ApiError(400,"A valid Idempotency-Key header is required");return key;};
+export const hashRequest=value=>crypto.createHash("sha256").update(JSON.stringify(value??{})).digest("hex");
+export const beginPaymentIdempotency=async({customerId,key,operation,request})=>{const normalizedKey=normalizeIdempotencyKey(key),requestHash=hashRequest(request);try{return {record:await PaymentIdempotency.create({customer:customerId,key:normalizedKey,operation,requestHash,expiresAt:new Date(Date.now()+TTL_MS)}),replay:false};}catch(error){if(error?.code!==11000)throw error;const existing=await PaymentIdempotency.findOne({customer:customerId,key:normalizedKey});if(!existing)throw error;if(existing.operation!==operation||existing.requestHash!==requestHash)throw new ApiError(409,"Idempotency key was already used with a different request");if(existing.status==="completed")return {record:existing,replay:true};if(existing.status==="processing")throw new ApiError(409,"The same payment request is already being processed");await PaymentIdempotency.deleteOne({_id:existing._id,status:"failed"});return beginPaymentIdempotency({customerId,key:normalizedKey,operation,request});}};
+export const completePaymentIdempotency=async(record,responseStatus,responseBody)=>PaymentIdempotency.updateOne({_id:record._id,status:"processing"},{$set:{status:"completed",responseStatus,responseBody,errorMessage:""}});
+export const failPaymentIdempotency=async(record,error)=>PaymentIdempotency.updateOne({_id:record._id,status:"processing"},{$set:{status:"failed",errorMessage:String(error?.message||"Payment request failed").slice(0,500)}});

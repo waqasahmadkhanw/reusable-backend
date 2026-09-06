@@ -1,0 +1,13 @@
+import { Router } from "express";
+import { uploadMedia,getAllMedia,getMediaById,updateMedia,deleteMedia } from "../controllers/media.controller.js";
+import { authUser,authorizePermission } from "../middlewares/auth.middleware.js";
+import { upload } from "../middlewares/multer.middleware.js";
+import { validateUploadedFileMiddleware } from "../middlewares/fileValidation.middleware.js";
+import { PERMISSIONS } from "../constants/permissions.js";
+const router=Router();
+router.post("/",authUser,authorizePermission(PERMISSIONS.MANAGE_MEDIA),upload.single("file"),validateUploadedFileMiddleware({ allowedTypes: "all" }),uploadMedia);
+router.get("/",authUser,getAllMedia);
+router.get("/:id",authUser,getMediaById);
+router.patch("/:id",authUser,updateMedia);
+router.delete("/:id",authUser,deleteMedia);
+export default router;

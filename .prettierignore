@@ -1,0 +1,5 @@
+node_modules
+coverage
+public/temp
+uploads
+*.min.js
